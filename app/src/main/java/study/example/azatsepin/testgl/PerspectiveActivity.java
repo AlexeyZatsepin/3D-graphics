@@ -1,21 +1,19 @@
 package study.example.azatsepin.testgl;
 
-import android.accounts.Account;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.opengl.GLSurfaceView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
 
+public class PerspectiveActivity extends AppCompatActivity {
     private GLSurfaceView glSurfaceView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,10 +23,9 @@ public class MainActivity extends AppCompatActivity {
         }
         glSurfaceView = new GLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new MainRenderer(this));
+        glSurfaceView.setRenderer(new PerspectiveRenderer(this));
         setContentView(glSurfaceView);
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -57,11 +54,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.perspective) {
-            startActivity(new Intent(this,PerspectiveActivity.class));
+        if (id == R.id.main) {
+            startActivity(new Intent(this,MainActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 }

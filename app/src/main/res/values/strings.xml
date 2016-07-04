@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">testGL</string>
+    <string name="app_name">Primitives</string>
+    <string name="perspective">perspective</string>
+    <string name="title_activity_perspective">PerspectiveActivity</string>
+    <string name="main">main</string>
+
 </resources>
