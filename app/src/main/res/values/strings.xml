@@ -5,4 +5,6 @@
     <string name="perspective">twist world</string>
     <string name="models">models</string>
     <string name="title_activity_models">models</string>
+    <string name="texture">texture view</string>
+    <string name="title_activity_textures">textures</string>
 </resources>

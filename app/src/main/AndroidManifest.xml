@@ -17,12 +17,14 @@
         <activity
             android:name=".PerspectiveActivity"
             android:label="@string/title_activity_perspective">
-
         </activity>
         <activity
             android:name=".ModelsActivity"
             android:label="@string/title_activity_models">
-
+        </activity>
+        <activity
+            android:name=".TextureActivity"
+            android:label="@string/title_activity_textures">
         </activity>
     </application>
 

@@ -15,4 +15,8 @@
         android:title="@string/models"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+    <item android:id="@+id/textures"
+        android:title="@string/texture"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>

@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this,PerspectiveActivity.class));
         }else if (id == R.id.models){
             startActivity(new Intent(this,ModelsActivity.class));
+        }else if (id == R.id.textures){
+            startActivity(new Intent(this,TextureActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
