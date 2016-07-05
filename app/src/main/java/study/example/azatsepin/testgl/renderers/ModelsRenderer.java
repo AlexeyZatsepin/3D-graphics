@@ -1,81 +1,52 @@
-package study.example.azatsepin.testgl;
+package study.example.azatsepin.testgl.renderers;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import study.example.azatsepin.testgl.R;
 import study.example.azatsepin.testgl.utils.ShaderUtils;
 
 import static android.opengl.GLES10.glDrawArrays;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
+import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
+import static android.opengl.GLES20.GL_LINES;
+import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glClear;
-import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glLineWidth;
 import static android.opengl.GLES20.glUniform4f;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
-import static android.opengl.GLES20.glViewport;
-import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
-import static android.opengl.GLES20.GL_DEPTH_TEST;
-import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_TRIANGLES;
-import static android.opengl.GLES20.GL_LINES;
-import static android.opengl.GLES20.glEnable;
 
-public class ModelsRenderer implements Renderer{
-
-    private final static int POSITION_COUNT = 3;
-    private final static long TIME = 10000L;
-
-    private Context context;
-
-    private FloatBuffer vertexData;
-
+public class ModelsRenderer extends AbstractRenderer{
     private int uColorLocation;
-    private int uMatrixLocation;
-    private int programId;
-
-    private float[] mProjectionMatrix = new float[16];
-    private float[] mViewMatrix = new float[16];
-    private float[] mModelMatrix = new float[16];
-    private float[] mMatrix = new float[16];
 
     public ModelsRenderer(Context context) {
-        this.context = context;
+        super(context);
     }
+
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        glClearColor(0f, 0f, 0f, 1f);
-        glEnable(GL_DEPTH_TEST);
-        int vertexShaderId = ShaderUtils.createShader(context, GL_VERTEX_SHADER, R.raw.vertex_shader);
-        int fragmentShaderId = ShaderUtils.createShader(context, GL_FRAGMENT_SHADER, R.raw.fragment_shader);
-        programId = ShaderUtils.createProgram(vertexShaderId, fragmentShaderId);
-        glUseProgram(programId);
-        createViewMatrix();
-        prepareData();
-        bindData();
+        super.onSurfaceCreated(gl10,eglConfig);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
-        glViewport(0, 0, width, height);
-        createProjectionMatrix(width, height);
-        bindMatrix();
+        super.onSurfaceChanged(gl10,width,height);
     }
 
     @Override
@@ -86,8 +57,8 @@ public class ModelsRenderer implements Renderer{
         // треугольник
         drawTriangle();
     }
-
-    private void prepareData() {
+    @Override
+    protected void prepareData() {
 
         float[] vertices = {
 
@@ -117,7 +88,15 @@ public class ModelsRenderer implements Renderer{
 
     }
 
-    private void bindData() {
+    @Override
+    protected void init() {
+        int vertexShaderId = ShaderUtils.createShader(context, GL_VERTEX_SHADER, R.raw.vertex_shader);
+        int fragmentShaderId = ShaderUtils.createShader(context, GL_FRAGMENT_SHADER, R.raw.fragment_shader);
+        programId = ShaderUtils.createProgram(vertexShaderId, fragmentShaderId);
+        glUseProgram(programId);
+    }
+
+    protected void bindData() {
         // примитивы
         int aPositionLocation = glGetAttribLocation(programId, "a_Position");
         vertexData.position(0);
@@ -132,28 +111,7 @@ public class ModelsRenderer implements Renderer{
         uMatrixLocation = glGetUniformLocation(programId, "u_Matrix");
     }
 
-    private void createProjectionMatrix(int width, int height) {
-        float ratio = 1;
-        float left = -1;
-        float right = 1;
-        float bottom = -1;
-        float top = 1;
-        float near = 2;
-        float far = 12;
-        if (width > height) {
-            ratio = (float) width / height;
-            left *= ratio;
-            right *= ratio;
-        } else {
-            ratio = (float) height / width;
-            bottom *= ratio;
-            top *= ratio;
-        }
-
-        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-    }
-
-    private void createViewMatrix() {
+    protected void createViewMatrix() {
         // точка положения камеры
         float eyeX = 2;
         float eyeY = 2;
@@ -173,7 +131,7 @@ public class ModelsRenderer implements Renderer{
     }
 
 
-    private void bindMatrix() {
+    protected void bindMatrix() {
         Matrix.multiplyMM(mMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
         Matrix.multiplyMM(mMatrix, 0, mProjectionMatrix, 0, mMatrix, 0);
         glUniformMatrix4fv(uMatrixLocation, 1, false, mMatrix, 0);
@@ -208,5 +166,4 @@ public class ModelsRenderer implements Renderer{
         Matrix.rotateM(mModelMatrix, 0, angle, 0, 0, 1);
         Matrix.translateM(mModelMatrix, 0, 2f, 0, 0);
     }
-
 }

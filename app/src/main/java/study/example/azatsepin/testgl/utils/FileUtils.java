@@ -1,6 +1,8 @@
 package study.example.azatsepin.testgl.utils;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.pm.ConfigurationInfo;
 import android.content.res.Resources;
 
 import java.io.BufferedReader;

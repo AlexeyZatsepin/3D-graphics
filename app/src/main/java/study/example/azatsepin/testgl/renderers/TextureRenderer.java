@@ -1,97 +1,62 @@
-package study.example.azatsepin.testgl;
+package study.example.azatsepin.testgl.renderers;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import study.example.azatsepin.testgl.R;
 import study.example.azatsepin.testgl.utils.ShaderUtils;
 import study.example.azatsepin.testgl.utils.TextureUtils;
 
+import static android.opengl.GLES10.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES10.GL_DEPTH_BUFFER_BIT;
+import static android.opengl.GLES10.GL_FLOAT;
+import static android.opengl.GLES10.GL_TEXTURE0;
+import static android.opengl.GLES10.GL_TRIANGLES;
+import static android.opengl.GLES10.GL_UNSIGNED_BYTE;
 import static android.opengl.GLES10.glActiveTexture;
 import static android.opengl.GLES10.glBindTexture;
 import static android.opengl.GLES10.glClear;
-import static android.opengl.GLES10.glClearColor;
-import static android.opengl.GLES10.GL_TRIANGLES;
 import static android.opengl.GLES10.glDrawElements;
-import static android.opengl.GLES10.glEnable;
-import static android.opengl.GLES10.GL_DEPTH_TEST;
-import static android.opengl.GLES10.GL_TEXTURE0;
-import static android.opengl.GLES20.GL_TEXTURE_CUBE_MAP;
-import static android.opengl.GLES10.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES10.GL_DEPTH_BUFFER_BIT;
-import static android.opengl.GLES10.GL_UNSIGNED_BYTE;
-import static android.opengl.GLES10.GL_FLOAT;
-import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
-import static android.opengl.GLES20.glVertexAttribPointer;
-import static android.opengl.GLES10.glViewport;
+import static android.opengl.GLES20.GL_TEXTURE_CUBE_MAP;
+import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
+import static android.opengl.GLES20.glVertexAttribPointer;
 
-public class TextureRenderer implements GLSurfaceView.Renderer{
-    private final static int POSITION_COUNT = 3;
-//    private static final int TEXTURE_COUNT = 2;
-//    private static final int STRIDE = (POSITION_COUNT
-//            + TEXTURE_COUNT) * 4;
-    private final long TIME = 10000L;
-    private Context context;
-
-    private FloatBuffer vertexData;
+public class TextureRenderer extends AbstractRenderer{
     private ByteBuffer indexArray;
-
-
-    private int aPositionLocation;
-    private int aTextureLocation;
     private int uTextureUnitLocation;
-    private int uMatrixLocation;
-
-    private int programId;
-
-    private float[] mProjectionMatrix = new float[16];
-    private float[] mViewMatrix = new float[16];
-    private float[] mModelMatrix = new float[16];
-    private float[] mMatrix = new float[16];
-
     private int texture;
 
     public TextureRenderer(Context context) {
-        this.context = context;
+        super(context);
     }
 
-
     @Override
-    public void onSurfaceCreated(GL10 arg0, EGLConfig arg1) {
-        glClearColor(0f, 0f, 0f, 1f);
-        glEnable(GL_DEPTH_TEST);
-
-        init();
-        prepareData();
-        bindData();
-        createViewMatrix();
+    public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+        super.onSurfaceCreated(gl10,eglConfig);
         Matrix.setIdentityM(mModelMatrix, 0);
     }
 
     @Override
-    public void onSurfaceChanged(GL10 arg0, int width, int height) {
-        glViewport(0, 0, width, height);
-        createProjectionMatrix(width, height);
-        bindMatrix();
+    public void onSurfaceChanged(GL10 gl10, int width, int height) {
+        super.onSurfaceChanged(gl10,width,height);
     }
 
-    private void prepareData() {
-
+    @Override
+    protected void prepareData() {
         float[] vertices = {
                 -1,  1,  1,     // верхняя левая ближняя
                 1,  1,  1,     // верхняя правая ближняя
@@ -143,7 +108,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer{
                 R.drawable.box, R.drawable.box});
     }
 
-    private void init() {
+    protected void init() {
         int vertexShaderId = ShaderUtils.createShader(context, GL_VERTEX_SHADER, R.raw.cube_vertex_shader);
         int fragmentShaderId = ShaderUtils.createShader(context, GL_FRAGMENT_SHADER, R.raw.cube_fragment_shader);
         programId = ShaderUtils.createProgram(vertexShaderId, fragmentShaderId);
@@ -154,7 +119,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer{
         uMatrixLocation = glGetUniformLocation(programId, "u_Matrix");
     }
 
-    private void bindData() {
+    protected void bindData() {
         // координаты вершин
         vertexData.position(0);
         glVertexAttribPointer(aPositionLocation, POSITION_COUNT, GL_FLOAT,
@@ -162,44 +127,12 @@ public class TextureRenderer implements GLSurfaceView.Renderer{
         glEnableVertexAttribArray(aPositionLocation);
 
 //        // координаты текстур
-//        vertexData.position(POSITION_COUNT);
-//        glVertexAttribPointer(aTextureLocation, TEXTURE_COUNT, GL_FLOAT,
-//                false, STRIDE, vertexData);
-//        glEnableVertexAttribArray(aTextureLocation);
-
-//        // помещаем текстуру в target 2D юнита 0
-//        glActiveTexture(GL_TEXTURE0);
-//        glBindTexture(GL_TEXTURE_2D, texture);
-        // помещаем текстуру в target CUBE_MAP юнита 0
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-
-        // юнит текстуры
         glUniform1i(uTextureUnitLocation, 0);
     }
 
-    private void createProjectionMatrix(int width, int height) {
-        float ratio = 1;
-        float left = -1;
-        float right = 1;
-        float bottom = -1;
-        float top = 1;
-        float near = 2;
-        float far = 12;
-        if (width > height) {
-            ratio = (float) width / height;
-            left *= ratio;
-            right *= ratio;
-        } else {
-            ratio = (float) height / width;
-            bottom *= ratio;
-            top *= ratio;
-        }
-
-        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-    }
-
-    private void createViewMatrix() {
+    protected void createViewMatrix() {
         // точка положения камеры
         float eyeX = 0;
         float eyeY = 2;
@@ -219,7 +152,7 @@ public class TextureRenderer implements GLSurfaceView.Renderer{
     }
 
 
-    private void bindMatrix() {
+    protected void bindMatrix() {
         Matrix.multiplyMM(mMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
         Matrix.multiplyMM(mMatrix, 0, mProjectionMatrix, 0, mMatrix, 0);
         glUniformMatrix4fv(uMatrixLocation, 1, false, mMatrix, 0);

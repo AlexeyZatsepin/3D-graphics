@@ -1,16 +1,14 @@
-package study.example.azatsepin.testgl;
-
+package study.example.azatsepin.testgl.renderers;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import study.example.azatsepin.testgl.R;
 import study.example.azatsepin.testgl.utils.ShaderUtils;
 
 import static android.opengl.GLES10.GL_TRIANGLES;
@@ -31,20 +29,17 @@ import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.GL_LINES;
 
 
-public class MainRenderer implements GLSurfaceView.Renderer {
-    private Context context;
-    private int programId;
-    private FloatBuffer vertexData;
+public class MainRenderer extends AbstractRenderer {
     private int aColorLocation;
     private int aPositionLocation;
 
 
     public MainRenderer(Context context) {
-        this.context = context;
-        prepareData();
+        super(context);
 
     }
-    private void prepareData() {
+    @Override
+    protected void prepareData() {
         float[] vertices = { //def vec4 (0,0,0,1)
                 -1f, 0f, 1.0f, 0.0f, 0.0f,
                 -1f, 1f, 0.0f, 1.0f, 0.0f,
@@ -79,7 +74,23 @@ public class MainRenderer implements GLSurfaceView.Renderer {
         vertexData.put(vertices);
     }
 
-    private void bindData(){ // передаем данные в шейдер
+    @Override
+    protected void init() {
+        int vertexShaderId = ShaderUtils.createShader(context, GL_VERTEX_SHADER, R.raw.simple_vertex_shader);
+        int fragmentShaderId = ShaderUtils.createShader(context, GL_FRAGMENT_SHADER, R.raw.simple_fragment_shader);
+        programId = ShaderUtils.createProgram(vertexShaderId,fragmentShaderId);
+        glUseProgram(programId);
+    }
+
+    @Override
+    protected void createViewMatrix() {
+
+    }
+    @Override
+    protected void bindMatrix() {
+
+    }
+    protected void bindData(){ // передаем данные в шейдер
         // координаты
         aPositionLocation = glGetAttribLocation(programId, "a_Position");
         vertexData.position(0);
@@ -94,14 +105,11 @@ public class MainRenderer implements GLSurfaceView.Renderer {
     }
 
 
-
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         glClearColor(0f, 0f, 0f, 1f);
-        int vertexShaderId = ShaderUtils.createShader(context, GL_VERTEX_SHADER, R.raw.simple_vertex_shader);
-        int fragmentShaderId = ShaderUtils.createShader(context, GL_FRAGMENT_SHADER, R.raw.simple_fragment_shader);
-        programId = ShaderUtils.createProgram(vertexShaderId,fragmentShaderId);
-        glUseProgram(programId);
+        init();
+        prepareData();
         bindData();
     }
 
