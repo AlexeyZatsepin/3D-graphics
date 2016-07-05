@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Primitives</string>
-    <string name="perspective">perspective</string>
-    <string name="title_activity_perspective">PerspectiveActivity</string>
-    <string name="main">main</string>
-
+    <string name="title_activity_perspective">Twist world</string>
+    <string name="main">primitives</string>
+    <string name="perspective">twist world</string>
+    <string name="models">models</string>
+    <string name="title_activity_models">models</string>
 </resources>

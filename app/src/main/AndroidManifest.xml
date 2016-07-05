@@ -19,6 +19,11 @@
             android:label="@string/title_activity_perspective">
 
         </activity>
+        <activity
+            android:name=".ModelsActivity"
+            android:label="@string/title_activity_models">
+
+        </activity>
     </application>
 
 </manifest>

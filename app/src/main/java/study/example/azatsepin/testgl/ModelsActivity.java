@@ -10,8 +10,9 @@ import android.widget.Toast;
 
 import static study.example.azatsepin.testgl.utils.SupportUtils.supportES2;
 
-public class PerspectiveActivity extends AppCompatActivity {
+public class ModelsActivity extends AppCompatActivity{
     private GLSurfaceView glSurfaceView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,9 +22,10 @@ public class PerspectiveActivity extends AppCompatActivity {
         }
         glSurfaceView = new GLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new PerspectiveRenderer(this));
+        glSurfaceView.setRenderer(new ModelsRenderer(this));
         setContentView(glSurfaceView);
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -45,10 +47,10 @@ public class PerspectiveActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.main) {
+        if (id == R.id.perspective) {
+            startActivity(new Intent(this,PerspectiveActivity.class));
+        }else if (id == R.id.main){
             startActivity(new Intent(this,MainActivity.class));
-        }else if (id == R.id.models){
-            startActivity(new Intent(this,ModelsActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
