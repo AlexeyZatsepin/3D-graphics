@@ -4,6 +4,7 @@ package study.example.azatsepin.testgl;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.SystemClock;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -39,7 +40,7 @@ import static android.opengl.GLES10.GL_COLOR_BUFFER_BIT;
 
 public class PerspectiveRenderer implements GLSurfaceView.Renderer {
     private final static int POSITION_COUNT = 3;
-
+    private final static long TIME = 10000;//for animation
     private Context context;
 
     private FloatBuffer vertexData;
@@ -137,10 +138,12 @@ public class PerspectiveRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
     }
     private void createViewMatrix() {
+        float time = (float) (SystemClock.uptimeMillis() % TIME) / TIME;
+        float angle = time * 2 * (float)Math.PI;
         // точка положения камеры
-        float eyeX = 2;
+        float eyeX = (float) (Math.cos(angle)*5f);
         float eyeY = 2;
-        float eyeZ = 4;
+        float eyeZ = (float) (Math.sin(angle)*5f);
 
         // точка направления камеры
         float centerX = 0;
@@ -181,6 +184,9 @@ public class PerspectiveRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl10) {
+        createViewMatrix();
+        bindMatrix();
+
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
